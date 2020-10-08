@@ -1,0 +1,126 @@
+package Workshop;
+
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+import io.github.bonigarcia.wdm.WebDriverManager;
+
+public class tc_003 {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		
+		WebDriverManager.chromedriver().setup();
+		
+		ChromeDriver am = new ChromeDriver();
+	
+	//1.Launch URL: https://www.amazon.in/	
+		am.get("https://www.amazon.in/");
+		
+		am.manage().window().maximize();
+		
+		am.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+		
+	//2. Type "oneplus 7 pro mobiles" in Search Box and Enter
+		
+		WebElement search = am.findElementById("twotabsearchtextbox");
+		search.sendKeys("oneplus 7 pro mobiles", Keys.ENTER);
+		
+	//3. Print the price of the first resulting mobile
+		
+		String price = am.findElementByXPath("(//span[@class='a-price-whole'])[1]").getText();
+		
+		
+		System.out.println(" Price of the Mobile is " +price);
+		
+	//4. Click on the Mobile (First resulting) image
+		
+		////div[@data-index='2']//div//div//div//div[2]//div//div//div//span//a//div/img
+		
+		am.findElementByXPath("//div[@data-index='2']//div//div//div//div[2]//div//div//div//span//a//div/img").click();
+		
+	//5. Switch to the new window
+		
+		Set<String> Windowhandle = am.getWindowHandles();
+		List<String> windows = new ArrayList<String>(Windowhandle);
+		
+		am.switchTo().window(windows.get(1));
+		
+	//6. Print the number of customer ratings	
+		
+		String CustRating = am.findElementById("acrCustomerReviewText").getText();
+		
+		System.out.println(" No.Of Customer Rating for the Mobile is " + CustRating);
+		
+	//7. Click 'Add to Cart'
+		
+		am.findElementById("add-to-cart-button").click();
+		
+		
+	//8. Confirm "Added to Cart" text message appeared	
+		
+		
+		String txt;
+		
+		WebElement confTxt = am.findElementByXPath("//h1[@class='a-size-medium a-text-bold']");
+		
+		txt = confTxt.getText();
+		
+		if (txt.equals("Added to Cart"))
+		
+			System.out.println("Selected item is added to cart successfully");
+		
+		else
+			
+			System.out.println("Selected item is not added to cart");
+		
+	//9.Click on Proceed to checkout
+		
+		am.findElementById("hlb-ptc-btn-native").click();
+		
+	//10. Confirm the title is "Amazon Sign In"	
+		
+		String title = am.getTitle();
+		
+		if (title.equals("Amazon Sign In"))
+		
+		System.out.println("Title is Amazon Sign In");
+			
+		else
+				
+		System.out.println("Title is not as expected ");
+		
+		
+	//11. Click Continue (without entering mobile number / email)
+		
+		am.findElementById("continue").click();
+		
+	//12. Verify the error message: Enter your email or mobile phone number
+		
+		WebElement errormsg = am.findElementByXPath("(//div[@class='a-alert-content'])[2]");
+		
+		String err = errormsg.getText();
+		
+		if(err.equals("Enter your email or mobile phone number"))
+			
+			System.out.println("Correct Error message");
+		else
+			System.out.println("Inappropriate Error message");
+		
+	//13.	Close both browsers	
+		
+		am.close(); //currentWindow
+		am.switchTo().window(windows.get(0));
+		
+		am.close();//closing parent window
+		
+	}
+
+}
